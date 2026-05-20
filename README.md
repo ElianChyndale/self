@@ -21,6 +21,15 @@ This project intentionally lives beside the existing Firebase web app. It preser
 6. Upload these cloud functions: `fetchIntelFeed`, `fetchIntelArticle`.
 7. Preview on device, then submit for WeChat review when the core flows are stable.
 
+## WeChat Cloud Hosting (Optional)
+
+This project primarily uses CloudBase cloud functions. If you also publish with WeChat Cloud Hosting, the repository must include a `Dockerfile`.
+
+- Docker entrypoint: `cloudhosting/server.mjs`
+- Health endpoint: `/healthz`
+
+If Cloud Hosting reports `没有找到Dockerfile`, verify the selected code repository path points to this project root where `Dockerfile` exists.
+
 ## Local Checks
 
 ```powershell
