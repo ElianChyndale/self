@@ -1,0 +1,60 @@
+<view class="screen theme-{{activeTheme}}">
+  <view class="masthead-frame">
+    <view class="masthead-status" style="height: {{statusBarHeight}}px;"></view>
+    <view class="masthead-shell">
+      <view class="masthead-body">
+        <view class="masthead-sigil">MR</view>
+        <view class="masthead-copy">
+          <view class="masthead-kicker">{{copy.roster.kicker}}</view>
+          <view class="masthead-title">{{copy.roster.title}}</view>
+          <view class="masthead-subtitle">{{dailySummaryText}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card card-glow">
+    <view class="row">
+      <text class="label gold">{{copy.roster.dailyProgress}}</text>
+      <text class="label">{{dailyPercent}}%</text>
+    </view>
+    <view class="progress" style="margin-top: 14rpx;">
+      <view class="progress-fill" style="width: {{dailyPercent}}%;"></view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="label gold">{{copy.roster.issueOrder}}</view>
+    <view class="subtitle">{{copy.roster.issueHelp}}</view>
+    <input class="input" placeholder="{{copy.roster.placeholder}}" placeholder-class="muted" value="{{formTitle}}" bindinput="onTitleInput" />
+    <view class="difficulty-row">
+      <view class="button {{formDifficulty === 'easy' ? '' : 'button-secondary'}}" data-difficulty="easy" bindtap="setDifficulty">{{copy.roster.easy || 'Easy'}}</view>
+      <view class="button {{formDifficulty === 'medium' ? '' : 'button-secondary'}}" data-difficulty="medium" bindtap="setDifficulty">{{copy.roster.medium || 'Medium'}}</view>
+      <view class="button {{formDifficulty === 'hard' ? '' : 'button-secondary'}}" data-difficulty="hard" bindtap="setDifficulty">{{copy.roster.hard || 'Hard'}}</view>
+    </view>
+    <view class="button" bindtap="submitMission">{{submitMissionLabel}}</view>
+  </view>
+
+  <view class="filter-row">
+    <view class="button {{filter === 'all' ? '' : 'button-secondary'}}" data-filter="all" bindtap="setFilter">{{copy.roster.all}}</view>
+    <view class="button {{filter === 'active' ? '' : 'button-secondary'}}" data-filter="active" bindtap="setFilter">{{copy.roster.active}}</view>
+    <view class="button {{filter === 'completed' ? '' : 'button-secondary'}}" data-filter="completed" bindtap="setFilter">{{copy.roster.completed}}</view>
+  </view>
+
+  <block wx:if="{{todos.length}}">
+    <view class="card card-bordered mission-card" wx:for="{{todos}}" wx:key="id">
+      <view class="row mission-card-top">
+        <view class="mission-copy">
+          <view class="mission-title {{item.completed ? 'mission-done' : ''}}">{{item.title}}</view>
+          <view class="label">{{item.difficultyLabel}} {{copy.roster.missionSuffix}}</view>
+        </view>
+        <view class="mission-actions">
+          <view wx:if="{{!item.completed}}" class="button" data-id="{{item.id}}" bindtap="completeMission">{{copy.roster.complete}}</view>
+          <view class="button button-secondary" data-id="{{item.id}}" bindtap="editMission">{{copy.roster.edit}}</view>
+          <view class="button button-danger" data-id="{{item.id}}" bindtap="deleteMission">{{copy.roster.delete}}</view>
+        </view>
+      </view>
+    </view>
+  </block>
+  <view class="empty" wx:else>{{copy.roster.empty}}</view>
+</view>

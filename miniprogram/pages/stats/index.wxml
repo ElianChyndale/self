@@ -1,0 +1,76 @@
+<view class="screen theme-{{activeTheme}}">
+  <view class="masthead-frame">
+    <view class="masthead-status" style="height: {{statusBarHeight}}px;"></view>
+    <view class="masthead-shell">
+      <view class="masthead-body">
+        <view class="masthead-sigil">ST</view>
+        <view class="masthead-copy">
+          <view class="masthead-kicker">{{copy.stats.kicker}}</view>
+          <view class="masthead-title">{{copy.stats.title}}</view>
+          <view class="masthead-subtitle">{{copy.stats.subtitle}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card card-bordered profile-card" bindtap="openProfile">
+    <view class="profile-avatar">
+      <image wx:if="{{avatarUrl}}" class="avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+      <view wx:else class="avatar-fallback">SH</view>
+    </view>
+    <view class="profile-summary">
+      <view class="value profile-name">{{profileName}}</view>
+      <view class="label">{{copy.stats.profileHint}}</view>
+    </view>
+  </view>
+
+  <view class="card card-bordered language-card">
+    <view class="row">
+      <view>
+        <view class="label gold">{{copy.stats.languageTitle}}</view>
+        <view class="subtitle">{{copy.stats.languageHelper}}</view>
+      </view>
+      <view class="button" bindtap="toggleLanguage">{{languageToggleText}}</view>
+    </view>
+  </view>
+
+  <view class="card card-glow rank-panel">
+    <view class="row">
+      <text class="label gold">{{rankTitleText}}</text>
+      <text class="label">{{rankProgressText}}</text>
+    </view>
+    <view class="progress" style="margin-top: 14rpx;">
+      <view class="progress-fill" style="width: {{rank.progressPercent}}%;"></view>
+    </view>
+    <view class="row" style="margin-top: 10rpx;">
+      <text class="label">{{currentThresholdText}}</text>
+      <text class="label">{{rank.progressPercent}}%</text>
+      <text class="label">{{nextThresholdText}}</text>
+    </view>
+    <view class="subtitle">{{totalXpSummaryText}}</view>
+  </view>
+
+  <view class="grid-2">
+    <view class="card card-bordered stats-metric">
+      <view class="label gold">{{copy.stats.energy}}</view>
+      <view class="value">{{currentEnergy}}%</view>
+    </view>
+    <view class="card card-bordered stats-metric">
+      <view class="label gold">{{copy.stats.totalXp}}</view>
+      <view class="value">{{totalXp}}</view>
+    </view>
+    <view class="card card-bordered stats-metric">
+      <view class="label gold">{{copy.stats.missionsDone}}</view>
+      <view class="value">{{totalTodosCompleted}}</view>
+    </view>
+    <view class="card card-bordered stats-metric">
+      <view class="label gold">{{copy.stats.intelRead}}</view>
+      <view class="value">{{totalArticlesRead}}</view>
+    </view>
+  </view>
+
+  <view class="card card-bordered total-service-card">
+    <view class="label gold">{{copy.stats.totalService}}</view>
+    <view class="value">{{totalService}}</view>
+  </view>
+</view>

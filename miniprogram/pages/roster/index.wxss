@@ -1,0 +1,48 @@
+.difficulty-row,
+.filter-row {
+  display: flex;
+  gap: 12rpx;
+  margin: 18rpx 0;
+}
+
+.difficulty-row .button,
+.filter-row .button {
+  flex: 1;
+  font-size: 20rpx;
+}
+
+.mission-card {
+  margin-bottom: 18rpx;
+}
+
+.mission-card-top {
+  align-items: flex-start;
+}
+
+.mission-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.mission-title {
+  color: var(--40k-parchment);
+  font-size: 30rpx;
+  line-height: 1.35;
+}
+
+.mission-done {
+  color: var(--app-subtitle);
+  text-decoration: line-through;
+}
+
+.mission-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  min-width: 150rpx;
+}
+
+.mission-actions .button {
+  min-height: 56rpx;
+  font-size: 18rpx;
+}

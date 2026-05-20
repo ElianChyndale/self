@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "lib": ["ES2020", "DOM"],
+    "types": [],
+    "noEmit": false
+  },
+  "include": ["miniprogram/**/*.ts", "miniprogram/**/*.d.ts"],
+  "exclude": ["tests/**/*.ts"]
+}

@@ -1,0 +1,59 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  text-align: left;
+}
+
+.profile-avatar {
+  flex: none;
+}
+
+.profile-summary {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-name {
+  font-size: 34rpx;
+}
+
+.rank-panel {
+  background:
+    linear-gradient(90deg, var(--app-accent-wash), transparent 34%),
+    var(--app-card-strong);
+}
+
+.language-card .row {
+  align-items: flex-start;
+}
+
+.stats-metric {
+  min-height: 156rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.total-service-card {
+  text-align: left;
+}
+
+.avatar,
+.avatar-fallback {
+  width: 120rpx;
+  height: 120rpx;
+  border: 1rpx solid var(--app-border-strong);
+  border-radius: 0;
+}
+
+.avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--40k-gold);
+  font-family: "Cinzel", serif;
+  letter-spacing: 4rpx;
+  background: var(--app-chip-bg);
+}

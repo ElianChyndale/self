@@ -1,0 +1,93 @@
+<view class="screen theme-{{activeTheme}}">
+  <view class="masthead-frame">
+    <view class="masthead-status" style="height: {{statusBarHeight}}px;"></view>
+    <view class="masthead-shell dashboard-header">
+      <view class="masthead-body">
+        <view class="masthead-sigil">SH</view>
+        <view class="masthead-copy">
+          <view class="masthead-kicker">{{copy.dashboard.kicker}}</view>
+          <view class="masthead-title">{{copy.dashboard.title}}</view>
+          <view class="masthead-subtitle">{{rankHeadline}}</view>
+        </view>
+      </view>
+      <view class="theme-trigger" bindtap="toggleThemeChooser">
+        <text class="theme-trigger-label">{{copy.theme.trigger}}</text>
+        <text class="theme-trigger-value">{{themeLabel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card card-bordered theme-card" wx:if="{{themeChooserOpen}}">
+    <view class="row theme-card-header">
+      <text class="label gold">{{copy.theme.appearance}}</text>
+      <text class="label">{{copy.theme.active}} {{activeThemeLabel}}</text>
+    </view>
+    <view class="theme-options">
+      <view class="button {{themePreference === 'light' ? '' : 'button-secondary'}}" data-preference="light" bindtap="chooseTheme">{{copy.theme.light}}</view>
+      <view class="button {{themePreference === 'dark' ? '' : 'button-secondary'}}" data-preference="dark" bindtap="chooseTheme">{{copy.theme.dark}}</view>
+      <view class="button {{themePreference === 'system' ? '' : 'button-secondary'}}" data-preference="system" bindtap="chooseTheme">{{copy.theme.system}}</view>
+    </view>
+    <view class="subtitle">{{copy.theme.helper}}</view>
+  </view>
+
+  <view class="card card-glow dashboard-rank-card">
+    <view class="row">
+      <text class="label gold">{{copy.dashboard.rankTitle}} {{rank.currentLevel}}</text>
+      <text class="label">{{rankProgressText}}</text>
+    </view>
+    <view class="progress" style="margin-top: 14rpx;">
+      <view class="progress-fill" style="width: {{rank.progressPercent}}%;"></view>
+    </view>
+    <view class="row" style="margin-top: 10rpx;">
+      <text class="label">{{xpRemainingText}}</text>
+      <text class="label">{{rank.progressPercent}}%</text>
+    </view>
+  </view>
+
+  <view class="grid-4">
+    <view class="card card-bordered dashboard-metric">
+      <view class="label gold">{{copy.dashboard.xp}}</view>
+      <view class="value">{{totalXp}}</view>
+    </view>
+    <view class="card card-bordered dashboard-metric">
+      <view class="label gold">{{copy.dashboard.active}}</view>
+      <view class="value">{{pendingCount}}</view>
+    </view>
+    <view class="card card-bordered dashboard-metric">
+      <view class="label gold">{{copy.dashboard.done}}</view>
+      <view class="value">{{totalTodosCompleted}}</view>
+    </view>
+    <view class="card card-bordered dashboard-metric">
+      <view class="label gold">{{copy.dashboard.service}}</view>
+      <view class="value dashboard-service">{{totalService}}</view>
+    </view>
+  </view>
+
+  <view class="card card-bordered">
+    <view class="row">
+      <text class="label gold">{{copy.dashboard.energy}}</text>
+      <text class="label">{{currentEnergy}}%</text>
+    </view>
+    <view class="progress" style="margin-top: 14rpx;">
+      <view class="{{energyClass}}" style="height: 100%; width: {{energyPercent}}%;"></view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{activeTodos.length}}">
+    <view class="row mission-list-header">
+      <text class="label gold">{{copy.dashboard.pending}}</text>
+      <text class="label">{{queuedText}}</text>
+    </view>
+    <block wx:for="{{activeTodos}}" wx:key="id">
+      <view class="row mission-line">
+        <view class="mission-copy">
+          <text class="mission-name">{{item.title}}</text>
+          <text class="mission-state">{{copy.dashboard.awaiting}}</text>
+        </view>
+        <text class="label">{{item.difficultyLabel}}</text>
+      </view>
+    </block>
+  </view>
+
+  <view class="empty" wx:else>{{copy.dashboard.noActive}}</view>
+</view>

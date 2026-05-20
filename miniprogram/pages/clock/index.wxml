@@ -1,0 +1,58 @@
+<view class="screen theme-{{activeTheme}}">
+  <view class="masthead-frame">
+    <view class="masthead-status" style="height: {{statusBarHeight}}px;"></view>
+    <view class="masthead-shell">
+      <view class="masthead-body">
+        <view class="masthead-sigil">WK</view>
+        <view class="masthead-copy">
+          <view class="masthead-kicker">{{copy.clock.kicker}}</view>
+          <view class="masthead-title">{{copy.clock.title}}</view>
+          <view class="masthead-subtitle">{{copy.clock.subtitle}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="clock-face card card-glow">
+    <view class="label">{{copy.clock.currentState}}</view>
+    <view class="clock-time">{{clockText}}</view>
+    <view class="clock-phase">{{clockLabel}}</view>
+    <view class="subtitle">{{copy.clock.helper}}</view>
+  </view>
+
+  <view class="clock-actions">
+    <view wx:if="{{workSession.state === 'idle'}}" class="button" bindtap="beginDuty">{{copy.clock.beginDuty}}</view>
+    <view wx:if="{{workSession.state === 'working'}}" class="button button-secondary" bindtap="pauseDuty">{{copy.clock.pause}}</view>
+    <view wx:if="{{workSession.state === 'paused'}}" class="button" bindtap="resumeDuty">{{copy.clock.resume}}</view>
+    <view wx:if="{{workSession.state !== 'idle'}}" class="button button-danger" bindtap="stopDuty">{{copy.clock.stop}}</view>
+    <view wx:if="{{currentEnergy < 100 && workSession.state === 'idle'}}" class="button button-secondary" bindtap="recoverDuty">{{copy.clock.recoveryAction}}</view>
+  </view>
+
+  <view class="grid-2">
+    <view class="card card-bordered clock-detail-card">
+      <view class="label">{{copy.clock.cycleDrain}}</view>
+      <view class="value gold">-10</view>
+      <view class="subtitle">{{copy.clock.cycleDrainHelp}}</view>
+    </view>
+    <view class="card card-bordered clock-detail-card">
+      <view class="label">{{copy.clock.recoveryRule}}</view>
+      <view class="value" style="color: var(--40k-verdigris-bright);">100%</view>
+      <view class="subtitle">{{copy.clock.recoveryRuleHelp}}</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="row">
+      <text class="label gold">{{copy.clock.energy}}</text>
+      <text class="label">{{currentEnergy}}%</text>
+    </view>
+    <view class="progress" style="margin-top: 14rpx;">
+      <view class="{{energyClass}}" style="height: 100%; width: {{energyPercent}}%;"></view>
+    </view>
+  </view>
+
+  <view class="card card-bordered" wx:if="{{workSession.state === 'resting'}}">
+    <view class="label gold">{{copy.clock.recoveryNotice}}</view>
+    <view class="subtitle">{{restMessage}}</view>
+  </view>
+</view>

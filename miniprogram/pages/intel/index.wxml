@@ -1,0 +1,96 @@
+<view class="screen theme-{{activeTheme}}">
+  <view class="masthead-frame">
+    <view class="masthead-status" style="height: {{statusBarHeight}}px;"></view>
+    <view class="masthead-shell">
+      <view class="masthead-body">
+        <view class="masthead-sigil">IN</view>
+        <view class="masthead-copy">
+          <view class="masthead-kicker">{{copy.intel.kicker}}</view>
+          <view class="masthead-title">{{copy.intel.title}}</view>
+          <view class="masthead-subtitle">{{copy.intel.subtitle}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card card-glow">
+    <view class="row intel-toolbar">
+      <view>
+        <view class="label gold">{{copy.intel.feedStatus}} · {{sourceLabel}}</view>
+        <view class="subtitle">{{cooldownText || copy.intel.contacting}}</view>
+      </view>
+      <view class="button {{isOnCooldown ? 'button-secondary' : ''}}" bindtap="refreshIntel">{{copy.intel.refresh}}</view>
+    </view>
+  </view>
+
+  <view class="intel-tabs">
+    <view
+      wx:for="{{categories}}"
+      wx:key="key"
+      class="button {{activeCategory === item.key ? '' : 'button-secondary'}} intel-tab"
+      data-category="{{item.key}}"
+      bindtap="setCategory"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <view class="card card-bordered intel-message intel-message-danger" wx:if="{{isDegraded}}">
+    {{copy.intel.relayDegraded}}
+  </view>
+
+  <view class="card card-bordered intel-message" wx:if="{{isLoading}}">
+    {{copy.intel.decryptingPackets}}
+  </view>
+
+  <block wx:if="{{!isLoading && visibleArticles.length}}">
+    <view
+      class="card card-bordered intel-card"
+      wx:for="{{visibleArticles}}"
+      wx:key="link"
+      data-link="{{item.link}}"
+      bindtap="openArticle"
+    >
+      <view class="row intel-card-top">
+        <view class="intel-meta">{{item.categoryLabel}}</view>
+        <view class="intel-meta">{{item.pubDate.slice(0, 10)}}</view>
+      </view>
+      <view class="intel-title">{{item.title}}</view>
+      <view class="intel-description">{{item.description}}</view>
+      <view class="row intel-card-footer">
+        <view class="label">{{item.link && item.link.length ? copy.intel.openReport : copy.intel.noReportLink}}</view>
+        <view class="intel-read" wx:if="{{readArticleIds.indexOf(item.link) !== -1}}">{{copy.intel.read}}</view>
+      </view>
+    </view>
+  </block>
+
+  <view class="empty" wx:if="{{!isLoading && !visibleArticles.length}}">
+    {{copy.intel.empty}}
+  </view>
+
+  <view class="reader-mask" wx:if="{{selectedArticle}}" bindtap="closeArticle">
+    <view class="reader-panel card card-glow" catchtap="noop">
+      <view class="row reader-header">
+        <view>
+          <view class="label gold">{{selectedArticle.categoryLabel}}</view>
+          <view class="reader-title">{{selectedArticle.title}}</view>
+        </view>
+        <view class="button button-secondary reader-close" bindtap="closeArticle">{{copy.intel.close}}</view>
+      </view>
+
+      <view class="card card-bordered intel-message intel-message-danger" wx:if="{{articleFetchFailed}}">
+        {{copy.intel.degradedExcerpt}}
+      </view>
+
+      <scroll-view scroll-y class="reader-scroll">
+        <view class="reader-loading" wx:if="{{isArticleLoading}}">{{copy.intel.decryptingReport}}</view>
+        <view class="reader-content" wx:else>{{articleContent}}</view>
+      </scroll-view>
+
+      <view class="row reader-footer">
+        <view class="label gold">{{copy.intel.xpReward}}</view>
+        <view class="button" bindtap="copyArticleLink">{{copy.intel.copyLink}}</view>
+      </view>
+    </view>
+  </view>
+</view>

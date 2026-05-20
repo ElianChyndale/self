@@ -1,0 +1,45 @@
+{
+  "pages": [
+    "pages/dashboard/index",
+    "pages/intel/index",
+    "pages/roster/index",
+    "pages/clock/index",
+    "pages/stats/index",
+    "pages/claim-profile/index"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "navigationBarTitleText": "SELF",
+    "navigationBarBackgroundColor": "#0a0a0a",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0a0a0a",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/dashboard/index",
+        "text": "Command"
+      },
+      {
+        "pagePath": "pages/intel/index",
+        "text": "Intel"
+      },
+      {
+        "pagePath": "pages/roster/index",
+        "text": "Roster"
+      },
+      {
+        "pagePath": "pages/clock/index",
+        "text": "Clock"
+      },
+      {
+        "pagePath": "pages/stats/index",
+        "text": "Stats"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

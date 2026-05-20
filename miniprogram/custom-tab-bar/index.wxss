@@ -1,0 +1,102 @@
+.theme-light {
+  --tab-bg: rgba(244, 239, 230, 0.92);
+  --tab-border: rgba(83, 75, 64, 0.16);
+  --tab-text: #6f685e;
+  --tab-active-bg: rgba(255, 255, 255, 0.4);
+  --tab-active-text: #7c6840;
+  --tab-sigil-bg: rgba(255, 255, 255, 0.35);
+  --tab-indicator: linear-gradient(90deg, #7e3d42, #7c6840);
+}
+
+.theme-dark {
+  --tab-bg: rgba(9, 12, 16, 0.92);
+  --tab-border: rgba(237, 240, 232, 0.1);
+  --tab-text: #7e857e;
+  --tab-active-bg: rgba(255, 255, 255, 0.03);
+  --tab-active-text: #ae9560;
+  --tab-sigil-bg: rgba(255, 255, 255, 0.02);
+  --tab-indicator: linear-gradient(90deg, #7a343e, #ae9560);
+}
+
+.tab-shell {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  padding: 0 24rpx calc(env(safe-area-inset-bottom) + 20rpx);
+  box-sizing: border-box;
+}
+
+.tab-bar {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  min-height: 112rpx;
+  border: 1rpx solid var(--tab-border);
+  background: var(--tab-bg);
+  backdrop-filter: blur(20rpx);
+  box-shadow: 0 -10rpx 32rpx rgba(0, 0, 0, 0.12);
+}
+
+.tab-item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 20rpx 8rpx 16rpx;
+  box-sizing: border-box;
+  border-right: 1rpx solid var(--tab-border);
+}
+
+.tab-item-active {
+  background: var(--tab-active-bg);
+}
+
+.tab-item:last-child {
+  border-right: none;
+}
+
+.tab-item-indicator {
+  position: absolute;
+  top: 0;
+  left: 18rpx;
+  right: 18rpx;
+  height: 3rpx;
+  background: transparent;
+}
+
+.tab-item-active .tab-item-indicator {
+  background: var(--tab-indicator);
+}
+
+.tab-item-sigil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44rpx;
+  min-height: 44rpx;
+  padding: 0 10rpx;
+  border: 1rpx solid var(--tab-border);
+  background: var(--tab-sigil-bg);
+  color: var(--tab-active-text);
+  font-family: "Cinzel", serif;
+  font-size: 16rpx;
+  letter-spacing: 3rpx;
+}
+
+.tab-item-label {
+  color: var(--tab-text);
+  font-family: "Cinzel", serif;
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.tab-item-active .tab-item-label {
+  color: var(--tab-active-text);
+}

@@ -1,0 +1,42 @@
+<view class="screen theme-{{activeTheme}}">
+  <view class="masthead-frame">
+    <view class="masthead-status" style="height: {{statusBarHeight}}px;"></view>
+    <view class="masthead-shell">
+      <view class="masthead-body">
+        <view class="masthead-sigil">ID</view>
+        <view class="masthead-copy">
+          <view class="masthead-kicker">{{copy.profile.kicker}}</view>
+          <view class="masthead-title">{{copy.profile.title}}</view>
+          <view class="masthead-subtitle">{{copy.profile.subtitle}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card card-bordered profile-card">
+    <view class="label gold">{{copy.profile.profileIdentity}}</view>
+    <view class="subtitle">{{copy.profile.profileHelper}}</view>
+    <view class="avatar-row">
+      <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="chooseAvatar">
+        <image wx:if="{{avatarUrl}}" class="avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+        <view wx:else class="avatar-fallback">SH</view>
+      </button>
+      <view class="avatar-copy">
+        <view class="label">{{copy.profile.avatarSeal}}</view>
+        <view class="subtitle">{{copy.profile.avatarHelper}}</view>
+      </view>
+    </view>
+    <input class="input" type="nickname" placeholder="{{copy.profile.nickname}}" placeholder-class="muted" value="{{nickname}}" bindinput="onNicknameInput" />
+    <view class="button" style="margin-top: 18rpx;" bindtap="saveProfile">{{copy.profile.saveProfile}}</view>
+  </view>
+
+  <view class="card">
+    <view class="label gold">{{copy.profile.claimTitle}}</view>
+    <view class="subtitle">{{copy.profile.claimHelper}}</view>
+    <view class="form-stack">
+      <input class="input" placeholder="{{copy.profile.email}}" placeholder-class="muted" value="{{email}}" bindinput="onEmailInput" />
+      <input class="input" placeholder="{{copy.profile.claimCode}}" placeholder-class="muted" value="{{claimCode}}" bindinput="onClaimCodeInput" />
+    </view>
+    <view class="button" style="margin-top: 18rpx;" bindtap="claimData">{{copy.profile.claimData}}</view>
+  </view>
+</view>

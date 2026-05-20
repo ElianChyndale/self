@@ -1,0 +1,93 @@
+.dashboard-header {
+  align-items: flex-start;
+}
+
+.theme-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6rpx;
+  min-width: 164rpx;
+  padding: 16rpx 18rpx;
+  border: 1rpx solid var(--app-border);
+  background: var(--app-chip-bg);
+  box-sizing: border-box;
+}
+
+.theme-trigger-label {
+  color: var(--40k-iron);
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+}
+
+.theme-trigger-value {
+  color: var(--40k-parchment);
+  font-family: "Cinzel", serif;
+  font-size: 24rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+}
+
+.theme-card-header {
+  align-items: flex-start;
+}
+
+.theme-options {
+  display: flex;
+  gap: 12rpx;
+  margin: 18rpx 0 14rpx;
+}
+
+.theme-options .button {
+  flex: 1;
+  font-size: 20rpx;
+}
+
+.dashboard-rank-card {
+  background:
+    linear-gradient(90deg, var(--app-accent-wash), transparent 35%),
+    var(--app-card-strong);
+}
+
+.dashboard-metric {
+  min-height: 156rpx;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dashboard-service {
+  font-size: 30rpx;
+}
+
+.mission-list-header {
+  margin-bottom: 10rpx;
+}
+
+.mission-line {
+  align-items: flex-start;
+  min-height: 82rpx;
+  padding: 18rpx 0 0;
+  border-top: 1rpx solid var(--app-divider);
+}
+
+.mission-copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.mission-name {
+  color: var(--40k-parchment);
+  font-size: 26rpx;
+  line-height: 1.4;
+}
+
+.mission-state {
+  color: var(--app-subtitle);
+  font-size: 20rpx;
+}

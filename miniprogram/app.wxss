@@ -1,0 +1,358 @@
+page {
+  font-family: "Noto Sans SC", "Segoe UI", sans-serif;
+  background: #e7e1d2;
+  color: #16181d;
+}
+
+.theme-light {
+  --40k-black: #e7e1d2;
+  --40k-gunmetal: #f1ecdf;
+  --40k-steel: #d9d2c4;
+  --40k-iron: #6f685e;
+  --40k-parchment: #181a1d;
+  --40k-gold: #7c6840;
+  --40k-gold-bright: #9d8655;
+  --40k-crimson: #7e3d42;
+  --40k-crimson-bright: #a8555d;
+  --40k-verdigris: #355764;
+  --40k-verdigris-bright: #4d7685;
+  --40k-bone: #fbf7ee;
+  --40k-brass: #7c6840;
+  --app-shell-bg: #e7e1d2;
+  --app-shell-grad-a: rgba(124, 104, 64, 0.08);
+  --app-shell-grad-b: rgba(126, 61, 66, 0.05);
+  --app-card-bg: rgba(251, 247, 238, 0.88);
+  --app-card-alt-bg: rgba(243, 238, 229, 0.94);
+  --app-card-strong: rgba(255, 251, 243, 0.98);
+  --app-border: rgba(83, 75, 64, 0.16);
+  --app-border-strong: rgba(83, 75, 64, 0.28);
+  --app-shadow: rgba(34, 29, 23, 0.08);
+  --app-shadow-soft: rgba(34, 29, 23, 0.04);
+  --app-subtitle: #676055;
+  --app-progress-track: rgba(103, 96, 85, 0.14);
+  --app-input-bg: rgba(255, 252, 246, 0.95);
+  --app-empty: #6c655a;
+  --app-divider: rgba(83, 75, 64, 0.1);
+  --app-chip-bg: rgba(245, 240, 231, 0.95);
+  --app-topbar-bg: rgba(244, 239, 230, 0.88);
+  --app-topbar-shadow: rgba(34, 29, 23, 0.05);
+  --app-inset: rgba(255, 255, 255, 0.62);
+  --app-surface-line: rgba(83, 75, 64, 0.1);
+  --app-surface-quiet: rgba(255, 255, 255, 0.35);
+  --app-accent-wash: rgba(124, 104, 64, 0.08);
+  --app-danger-wash: rgba(126, 61, 66, 0.08);
+}
+
+.theme-dark {
+  --40k-black: #050607;
+  --40k-gunmetal: #0d1014;
+  --40k-steel: #161b21;
+  --40k-iron: #6b7380;
+  --40k-parchment: #edf0e8;
+  --40k-gold: #ae9560;
+  --40k-gold-bright: #d1b67a;
+  --40k-crimson: #7a343e;
+  --40k-crimson-bright: #b36470;
+  --40k-verdigris: #4a6974;
+  --40k-verdigris-bright: #6f95a3;
+  --40k-bone: #d9d0bf;
+  --40k-brass: #ae9560;
+  --app-shell-bg: #050607;
+  --app-shell-grad-a: rgba(174, 149, 96, 0.08);
+  --app-shell-grad-b: rgba(122, 52, 62, 0.08);
+  --app-card-bg: rgba(13, 16, 20, 0.88);
+  --app-card-alt-bg: rgba(16, 20, 26, 0.94);
+  --app-card-strong: rgba(20, 25, 31, 0.98);
+  --app-border: rgba(217, 208, 191, 0.1);
+  --app-border-strong: rgba(217, 208, 191, 0.18);
+  --app-shadow: rgba(0, 0, 0, 0.24);
+  --app-shadow-soft: rgba(0, 0, 0, 0.12);
+  --app-subtitle: #8e948d;
+  --app-progress-track: rgba(237, 240, 232, 0.08);
+  --app-input-bg: rgba(9, 12, 16, 0.96);
+  --app-empty: #7e857e;
+  --app-divider: rgba(237, 240, 232, 0.08);
+  --app-chip-bg: rgba(20, 25, 31, 0.95);
+  --app-topbar-bg: rgba(9, 12, 16, 0.86);
+  --app-topbar-shadow: rgba(0, 0, 0, 0.2);
+  --app-inset: rgba(255, 255, 255, 0.04);
+  --app-surface-line: rgba(237, 240, 232, 0.08);
+  --app-surface-quiet: rgba(255, 255, 255, 0.02);
+  --app-accent-wash: rgba(174, 149, 96, 0.1);
+  --app-danger-wash: rgba(122, 52, 62, 0.1);
+}
+
+.screen {
+  min-height: 100vh;
+  padding: 0 28rpx calc(env(safe-area-inset-bottom) + 176rpx);
+  box-sizing: border-box;
+  color: var(--40k-parchment);
+}
+
+.screen.theme-dark {
+  background:
+    radial-gradient(circle at top right, var(--app-shell-grad-b), transparent 26%),
+    linear-gradient(180deg, rgba(174, 149, 96, 0.05) 0%, transparent 22%),
+    linear-gradient(180deg, #0c0f12 0%, var(--app-shell-bg) 100%);
+}
+
+.screen.theme-light {
+  background:
+    radial-gradient(circle at top right, var(--app-shell-grad-b), transparent 24%),
+    linear-gradient(180deg, rgba(124, 104, 64, 0.04) 0%, transparent 20%),
+    linear-gradient(180deg, #f0eadf 0%, var(--app-shell-bg) 100%);
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 28rpx;
+}
+
+.masthead-frame {
+  position: relative;
+  margin: 0 0 30rpx;
+}
+
+.masthead-status {
+  background: transparent;
+}
+
+.masthead-shell {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 26rpx 28rpx 24rpx;
+  border: 1rpx solid var(--app-border);
+  background: var(--app-topbar-bg);
+  backdrop-filter: blur(18rpx);
+  box-shadow:
+    inset 0 1rpx 0 var(--app-inset),
+    0 16rpx 34rpx var(--app-shadow-soft);
+}
+
+.masthead-shell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 28rpx;
+  width: 108rpx;
+  height: 3rpx;
+  background: linear-gradient(90deg, var(--40k-crimson), var(--40k-gold));
+  opacity: 0.8;
+}
+
+.masthead-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  min-width: 0;
+  flex: 1;
+}
+
+.masthead-rivet {
+  display: none;
+}
+
+.masthead-sigil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76rpx;
+  height: 76rpx;
+  padding: 0 10rpx;
+  border: 1rpx solid var(--app-border-strong);
+  background:
+    linear-gradient(180deg, var(--app-accent-wash) 0%, transparent 100%),
+    var(--app-surface-quiet);
+  color: var(--40k-gold);
+  font-family: "Cinzel", "Noto Serif SC", serif;
+  font-size: 20rpx;
+  letter-spacing: 4rpx;
+  text-transform: uppercase;
+  box-sizing: border-box;
+}
+
+.masthead-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.masthead-kicker {
+  color: var(--40k-iron);
+  font-size: 18rpx;
+  letter-spacing: 4rpx;
+  text-transform: uppercase;
+}
+
+.masthead-title,
+.title-text {
+  margin-top: 8rpx;
+  color: var(--40k-parchment);
+  font-family: "Cinzel", "Noto Serif SC", serif;
+  font-size: 42rpx;
+  line-height: 1.1;
+  letter-spacing: 4rpx;
+  text-transform: uppercase;
+}
+
+.masthead-subtitle,
+.subtitle {
+  margin-top: 10rpx;
+  color: var(--app-subtitle);
+  font-size: 22rpx;
+  line-height: 1.55;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border: 1rpx solid var(--app-border);
+  background: var(--app-card-bg);
+  padding: 28rpx;
+  margin-bottom: 22rpx;
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 1rpx 0 var(--app-inset),
+    0 12rpx 30rpx var(--app-shadow-soft);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2rpx;
+  background: linear-gradient(90deg, var(--40k-crimson), var(--40k-gold), transparent 88%);
+  opacity: 0.45;
+}
+
+.card-bordered {
+  background: var(--app-card-alt-bg);
+}
+
+.card-glow {
+  background: var(--app-card-strong);
+  border-color: var(--app-border-strong);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18rpx;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.label {
+  color: var(--40k-iron);
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+}
+
+.value {
+  color: var(--40k-parchment);
+  font-family: "Cinzel", "Noto Serif SC", serif;
+  font-size: 42rpx;
+  line-height: 1.1;
+}
+
+.gold {
+  color: var(--40k-gold);
+}
+
+.muted {
+  color: var(--app-subtitle);
+}
+
+.progress {
+  height: 12rpx;
+  overflow: hidden;
+  border: 1rpx solid var(--app-border);
+  background: var(--app-progress-track);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--40k-gold), var(--40k-gold-bright));
+}
+
+.energy-good {
+  height: 100%;
+  background: linear-gradient(90deg, var(--40k-verdigris), var(--40k-verdigris-bright));
+}
+
+.energy-warn {
+  height: 100%;
+  background: linear-gradient(90deg, var(--40k-gold), var(--40k-gold-bright));
+}
+
+.energy-danger {
+  height: 100%;
+  background: linear-gradient(90deg, var(--40k-crimson), var(--40k-crimson-bright));
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72rpx;
+  padding: 0 28rpx;
+  border: 1rpx solid rgba(174, 149, 96, 0.32);
+  background:
+    linear-gradient(180deg, var(--app-accent-wash) 0%, transparent 100%),
+    var(--app-surface-quiet);
+  color: var(--40k-gold);
+  font-family: "Cinzel", "Noto Serif SC", serif;
+  font-size: 22rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  box-sizing: border-box;
+}
+
+.button-secondary {
+  border-color: var(--app-border);
+  background: var(--app-card-alt-bg);
+  color: var(--40k-parchment);
+}
+
+.button-danger {
+  border-color: rgba(179, 100, 112, 0.36);
+  background:
+    linear-gradient(180deg, var(--app-danger-wash) 0%, transparent 100%),
+    var(--app-surface-quiet);
+  color: var(--40k-crimson-bright);
+}
+
+.input {
+  width: 100%;
+  min-height: 80rpx;
+  padding: 0 22rpx;
+  border: 1rpx solid var(--app-border);
+  background: var(--app-input-bg);
+  color: var(--40k-parchment);
+  box-sizing: border-box;
+}
+
+.empty {
+  padding: 72rpx 20rpx;
+  text-align: center;
+  color: var(--app-empty);
+  font-size: 25rpx;
+  line-height: 1.6;
+}

@@ -1,0 +1,46 @@
+.profile-card {
+  text-align: left;
+}
+
+.avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  margin: 20rpx 0;
+}
+
+.avatar-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.avatar-button {
+  padding: 0;
+  width: 132rpx;
+  height: 132rpx;
+  border: none;
+  background: transparent;
+}
+
+.avatar,
+.avatar-fallback {
+  width: 132rpx;
+  height: 132rpx;
+  border: 1rpx solid var(--app-border-strong);
+}
+
+.avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--40k-gold);
+  font-family: "Cinzel", serif;
+  letter-spacing: 4rpx;
+  background: var(--app-chip-bg);
+}
+
+.form-stack {
+  display: grid;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}

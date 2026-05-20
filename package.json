@@ -1,0 +1,22 @@
+{
+  "name": "self-wechat-mini-program",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:miniprogram": "tsc -p tsconfig.miniprogram.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "watch:miniprogram": "tsc -p tsconfig.miniprogram.json --watch --preserveWatchOutput",
+    "migration:claims": "node scripts/generate-migration-claims.mjs"
+  },
+  "dependencies": {
+    "@cloudbase/node-sdk": "^2.11.0",
+    "firebase-admin": "^13.0.0",
+    "wx-server-sdk": "^3.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
