@@ -2,6 +2,12 @@
   text-align: left;
 }
 
+.onboarding-card {
+  background:
+    linear-gradient(90deg, var(--app-accent-wash), transparent 42%),
+    var(--app-card-alt-bg);
+}
+
 .avatar-row {
   display: flex;
   align-items: center;
@@ -43,4 +49,43 @@
   display: grid;
   gap: 16rpx;
   margin-top: 18rpx;
+}
+
+.profile-hint {
+  margin-top: 14rpx;
+}
+
+.status-panel {
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  border: 1rpx solid var(--app-border);
+  color: var(--40k-parchment);
+  font-size: 22rpx;
+  line-height: 1.5;
+  background: var(--app-card-alt-bg);
+}
+
+.status-success {
+  border-color: rgba(111, 149, 163, 0.28);
+  background:
+    linear-gradient(90deg, rgba(74, 105, 116, 0.12), transparent 42%),
+    var(--app-card-alt-bg);
+}
+
+.status-warn {
+  border-color: rgba(174, 149, 96, 0.28);
+  background:
+    linear-gradient(90deg, var(--app-accent-wash), transparent 42%),
+    var(--app-card-alt-bg);
+}
+
+.status-error {
+  border-color: rgba(179, 100, 112, 0.28);
+  background:
+    linear-gradient(90deg, var(--app-danger-wash), transparent 42%),
+    var(--app-card-alt-bg);
+}
+
+.status-info {
+  border-color: var(--app-border-strong);
 }

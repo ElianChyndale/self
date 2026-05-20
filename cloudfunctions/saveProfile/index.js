@@ -10,17 +10,29 @@ exports.main = async (event) => {
 
   const profile = event.profile || {};
   const now = new Date().toISOString();
+  const existing = await safeGet(db.collection('users').doc(OPENID));
   const data = {
     openId: OPENID,
-    nickname: String(profile.nickname || `SELF-${OPENID.slice(-4).toUpperCase()}`).slice(0, 32),
-    avatarUrl: String(profile.avatarUrl || ''),
-    createdAt: profile.createdAt || now,
+    nickname: String(profile.nickname || existing?.nickname || `SELF-${OPENID.slice(-4).toUpperCase()}`).slice(0, 32),
+    avatarUrl: String(profile.avatarUrl || existing?.avatarUrl || ''),
+    createdAt: existing?.createdAt || profile.createdAt || now,
     updatedAt: now,
   };
-  if (profile.firebaseUid) data.firebaseUid = profile.firebaseUid;
-  if (profile.claimedFirebaseEmail) data.claimedFirebaseEmail = profile.claimedFirebaseEmail;
+  if (profile.firebaseUid || existing?.firebaseUid) data.firebaseUid = profile.firebaseUid || existing.firebaseUid;
+  if (profile.claimedFirebaseEmail || existing?.claimedFirebaseEmail) {
+    data.claimedFirebaseEmail = profile.claimedFirebaseEmail || existing.claimedFirebaseEmail;
+  }
 
   await db.collection('users').doc(OPENID).set({ data });
 
-  return { ok: true };
+  return { ok: true, profile: data };
 };
+
+async function safeGet(ref) {
+  try {
+    const result = await ref.get();
+    return result.data || null;
+  } catch {
+    return null;
+  }
+}

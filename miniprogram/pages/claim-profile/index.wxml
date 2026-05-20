@@ -13,6 +13,11 @@
     </view>
   </view>
 
+  <view class="card card-bordered onboarding-card" wx:if="{{mode === 'onboarding'}}">
+    <view class="label gold">{{copy.profile.onboardingTitle}}</view>
+    <view class="subtitle">{{copy.profile.onboardingHelper}}</view>
+  </view>
+
   <view class="card card-bordered profile-card">
     <view class="label gold">{{copy.profile.profileIdentity}}</view>
     <view class="subtitle">{{copy.profile.profileHelper}}</view>
@@ -27,16 +32,27 @@
       </view>
     </view>
     <input class="input" type="nickname" placeholder="{{copy.profile.nickname}}" placeholder-class="muted" value="{{nickname}}" bindinput="onNicknameInput" />
-    <view class="button" style="margin-top: 18rpx;" bindtap="saveProfile">{{copy.profile.saveProfile}}</view>
+    <view class="subtitle profile-hint">{{copy.profile.saveReadyHint}}</view>
+    <view wx:if="{{profileStatusText}}" class="status-panel status-{{profileStatusTone}}">{{profileStatusText}}</view>
+    <view
+      class="button {{canSaveProfile && !profileSaveBusy ? '' : 'button-secondary button-disabled'}}"
+      style="margin-top: 18rpx;"
+      bindtap="saveProfile"
+    >{{profileSaveBusy ? copy.profile.savingProfile : copy.profile.saveProfile}}</view>
   </view>
 
   <view class="card">
     <view class="label gold">{{copy.profile.claimTitle}}</view>
     <view class="subtitle">{{copy.profile.claimHelper}}</view>
+    <view class="status-panel status-{{claimStatusTone}}">{{claimStatusText}}</view>
     <view class="form-stack">
       <input class="input" placeholder="{{copy.profile.email}}" placeholder-class="muted" value="{{email}}" bindinput="onEmailInput" />
       <input class="input" placeholder="{{copy.profile.claimCode}}" placeholder-class="muted" value="{{claimCode}}" bindinput="onClaimCodeInput" />
     </view>
-    <view class="button" style="margin-top: 18rpx;" bindtap="claimData">{{copy.profile.claimData}}</view>
+    <view
+      class="button {{claimAvailable && !claimBusy ? '' : 'button-secondary button-disabled'}}"
+      style="margin-top: 18rpx;"
+      bindtap="claimData"
+    >{{claimBusy ? copy.profile.claimingToast : copy.profile.claimData}}</view>
   </view>
 </view>

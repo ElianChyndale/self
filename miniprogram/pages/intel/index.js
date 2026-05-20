@@ -32,14 +32,7 @@ Page({
     },
     onShow() {
         var _a;
-        const app = getApp();
-        (0, tabBar_1.syncCustomTabBar)(this, 1, app.globalData.activeTheme, app.globalData.activeLanguage);
-        this.setData((0, pageData_1.buildThemePageData)(app.globalData.themePreference, app.globalData.activeTheme, app.globalData.statusBarHeight, app.globalData.languagePreference, app.globalData.activeLanguage));
-        this.setData({
-            readArticleIds: app.globalData.gameState.readArticleIds,
-            categories: (0, language_1.getIntelCategoryOptions)(app.globalData.activeLanguage),
-            copy: (0, language_1.getLanguagePack)(app.globalData.activeLanguage),
-        });
+        this.refresh();
         const cache = (0, storage_1.loadLocalIntelCache)();
         this.applyFeedState((0, intel_1.buildIntelFeedState)({
             fallbackArticles: intelSeed_1.BUNDLED_INTEL_ARTICLES,
@@ -54,6 +47,16 @@ Page({
         else {
             this.setData({ isLoading: false });
         }
+    },
+    refresh() {
+        const app = getApp();
+        (0, tabBar_1.syncCustomTabBar)(this, 1, app.globalData.activeTheme, app.globalData.activeLanguage);
+        this.setData((0, pageData_1.buildThemePageData)(app.globalData.themePreference, app.globalData.activeTheme, app.globalData.statusBarHeight, app.globalData.languagePreference, app.globalData.activeLanguage));
+        this.setData({
+            readArticleIds: app.globalData.gameState.readArticleIds,
+            categories: (0, language_1.getIntelCategoryOptions)(app.globalData.activeLanguage),
+            copy: (0, language_1.getLanguagePack)(app.globalData.activeLanguage),
+        });
     },
     setCategory(event) {
         this.setData({ activeCategory: event.currentTarget.dataset.category });

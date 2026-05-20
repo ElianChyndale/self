@@ -1,5 +1,5 @@
 import { CLOUD_ENV_ID } from '../env';
-import type { GameState, IntelSource, NewsArticle, UserProfile } from '../types';
+import type { AppCapabilities, GameState, IntelSource, NewsArticle, UserProfile } from '../types';
 
 type CloudErrorCode = 'TIMEOUT' | 'UNAVAILABLE' | 'UNKNOWN';
 
@@ -8,6 +8,42 @@ interface CloudErrorInfo {
   message: string;
   degraded: boolean;
 }
+
+export type ClaimMigrationCode =
+  | 'NOT_CONFIGURED'
+  | 'INVALID_CODE'
+  | 'ALREADY_USED'
+  | 'EXPIRED'
+  | 'UNAVAILABLE'
+  | 'TIMEOUT'
+  | 'UNKNOWN';
+
+export interface LoginResult {
+  openId: string;
+  profile: UserProfile;
+  gameState: GameState;
+  capabilities: AppCapabilities;
+}
+
+export interface SaveProfileResult {
+  ok: true;
+  profile: UserProfile;
+}
+
+export type ClaimMigrationResult =
+  | {
+    ok: true;
+    openId: string;
+    profile: UserProfile;
+    gameState: GameState;
+    capabilities: AppCapabilities;
+  }
+  | {
+    ok: false;
+    code: ClaimMigrationCode;
+    message: string;
+    claimMigrationConfigured: boolean;
+  };
 
 export function classifyCloudError(error: unknown): CloudErrorInfo {
   const message = error instanceof Error ? error.message : String(error || 'Unknown cloud error');
@@ -76,12 +112,6 @@ export async function callCloudFunction<T>(
   }
 }
 
-export interface LoginResult {
-  openId: string;
-  profile: UserProfile;
-  gameState: GameState;
-}
-
 export function loginWithCloud(): Promise<LoginResult> {
   return callCloudFunction<LoginResult>('login', {}, 8000);
 }
@@ -90,12 +120,12 @@ export function saveGameStateToCloud(gameState: GameState): Promise<{ ok: boolea
   return callCloudFunction<{ ok: boolean }>('saveGameState', { gameState }, 5000);
 }
 
-export function saveProfileToCloud(profile: Partial<UserProfile>): Promise<{ ok: boolean }> {
-  return callCloudFunction<{ ok: boolean }>('saveProfile', { profile }, 5000);
+export function saveProfileToCloud(profile: Partial<UserProfile>): Promise<SaveProfileResult> {
+  return callCloudFunction<SaveProfileResult>('saveProfile', { profile }, 5000);
 }
 
-export function claimMigration(email: string, claimCode: string): Promise<LoginResult> {
-  return callCloudFunction<LoginResult>('claimMigration', { email, claimCode }, 10000);
+export function claimMigration(email: string, claimCode: string): Promise<ClaimMigrationResult> {
+  return callCloudFunction<ClaimMigrationResult>('claimMigration', { email, claimCode }, 10000);
 }
 
 export function fetchIntelFeed(force = false): Promise<{

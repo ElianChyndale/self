@@ -59,6 +59,7 @@ for await (const user of listFirebaseUsers()) {
       ...gameStateSnapshot,
       migratedProfile: profileSnapshot,
     },
+    profileSnapshot,
     claimCode,
     salt: process.env.CLAIM_CODE_SALT,
     expiresAt,

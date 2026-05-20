@@ -272,6 +272,10 @@ function getLanguagePack(language) {
             kicker: isZh ? '身份中继' : 'Identity Relay',
             title: isZh ? '资料' : 'Profile',
             subtitle: isZh ? '设置你的微信身份并迁移旧的 Firebase 数据。' : 'Set your WeChat identity and claim old Firebase data.',
+            onboardingTitle: isZh ? '首次使用需要完成资料设置' : 'Complete your profile before using the app',
+            onboardingHelper: isZh
+                ? '请先设置昵称和头像，完成后再进入主功能页面。'
+                : 'Please set both nickname and avatar before entering the main app.',
             profileIdentity: isZh ? '身份资料' : 'Profile Identity',
             profileHelper: isZh
                 ? '选择头像并确认这个小程序要展示的公开昵称。'
@@ -282,6 +286,10 @@ function getLanguagePack(language) {
                 : 'WeChat will prompt for a fresh avatar selection when you tap the frame.',
             nickname: isZh ? '昵称' : 'Nickname',
             saveProfile: isZh ? '保存资料' : 'Save Profile',
+            saveReadyHint: isZh ? '昵称与头像都填写后才可保存。' : 'Saving requires both a nickname and an avatar.',
+            savingProfile: isZh ? '正在保存资料…' : 'Saving profile...',
+            savedInline: isZh ? '资料已同步到云端。' : 'Profile saved to cloud.',
+            savedLocalOnly: isZh ? '资料已保存在本地，云端同步稍后重试。' : 'Profile saved locally. Cloud sync will retry later.',
             claimTitle: isZh ? '迁移 Firebase 存档' : 'Claim Firebase Save',
             claimHelper: isZh
                 ? '输入你 Firebase 账户对应的邮箱和一次性迁移码。'
@@ -289,11 +297,20 @@ function getLanguagePack(language) {
             email: 'Email',
             claimCode: isZh ? '迁移码' : 'Claim code',
             claimData: isZh ? '迁移数据' : 'Claim Data',
-            savedToast: isZh ? '资料已保存' : 'Profile saved',
+            claimChecking: isZh ? '正在检查迁移服务状态…' : 'Checking migration service...',
+            claimUnavailableUnconfigured: isZh ? '迁移服务尚未完成后台配置，请联系运营方。' : 'Migration service is not configured yet.',
+            claimUnavailableOffline: isZh ? '当前无法连接云端，暂时不能迁移 Firebase 数据。' : 'Cloud connection is unavailable, so migration cannot run right now.',
+            claimReady: isZh ? '迁移服务可用，可输入邮箱与迁移码。' : 'Migration service is available. Enter email and claim code to continue.',
             requiredToast: isZh ? '邮箱和迁移码必填' : 'Email and code required',
+            profileRequiredToast: isZh ? '请先填写昵称并选择头像' : 'Please enter nickname and choose avatar first',
             claimingToast: isZh ? '迁移中' : 'Claiming',
             claimedToast: isZh ? '数据已迁移' : 'Data claimed',
-            failedToast: isZh ? '迁移失败' : 'Claim failed',
+            claimInvalid: isZh ? '迁移码无效，请检查邮箱与迁移码。' : 'Invalid claim code. Check the email and claim code.',
+            claimUsed: isZh ? '该迁移码已被使用。' : 'This claim code has already been used.',
+            claimExpired: isZh ? '该迁移码已过期。' : 'This claim code has expired.',
+            claimNotConfigured: isZh ? '迁移服务未配置完成。' : 'Migration service is not configured.',
+            claimTimeout: isZh ? '迁移请求超时，请稍后重试。' : 'Migration request timed out. Please try again later.',
+            claimUnknown: isZh ? '迁移失败，请稍后再试。' : 'Migration failed. Please try again later.',
         },
     };
 }

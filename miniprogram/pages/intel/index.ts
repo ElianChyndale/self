@@ -56,6 +56,23 @@ Page({
   },
 
   onShow() {
+    this.refresh();
+    const cache = loadLocalIntelCache();
+    this.applyFeedState(buildIntelFeedState({
+      fallbackArticles: BUNDLED_INTEL_ARTICLES,
+      cachedArticles: cache?.articles || [],
+      liveArticles: [],
+      fetchedAt: cache?.fetchedAt || 0,
+      hasLiveError: false,
+    }));
+    if (!cache?.articles?.length || !isIntelRefreshOnCooldown(cache.fetchedAt)) {
+      void this.loadIntel(false);
+    } else {
+      this.setData({ isLoading: false });
+    }
+  },
+
+  refresh() {
     const app = getApp<IAppOption>();
     syncCustomTabBar(this, 1, app.globalData.activeTheme, app.globalData.activeLanguage);
     this.setData(buildThemePageData(
@@ -70,19 +87,6 @@ Page({
       categories: getIntelCategoryOptions(app.globalData.activeLanguage),
       copy: getLanguagePack(app.globalData.activeLanguage),
     });
-    const cache = loadLocalIntelCache();
-    this.applyFeedState(buildIntelFeedState({
-      fallbackArticles: BUNDLED_INTEL_ARTICLES,
-      cachedArticles: cache?.articles || [],
-      liveArticles: [],
-      fetchedAt: cache?.fetchedAt || 0,
-      hasLiveError: false,
-    }));
-    if (!cache?.articles?.length || !isIntelRefreshOnCooldown(cache.fetchedAt)) {
-      void this.loadIntel(false);
-    } else {
-      this.setData({ isLoading: false });
-    }
   },
 
   setCategory(event: any) {

@@ -339,6 +339,10 @@ page {
   color: var(--40k-crimson-bright);
 }
 
+.button-disabled {
+  opacity: 0.48;
+}
+
 .input {
   width: 100%;
   min-height: 80rpx;

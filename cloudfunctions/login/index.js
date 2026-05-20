@@ -34,6 +34,9 @@ exports.main = async () => {
     openId: OPENID,
     profile,
     gameState: sanitizeGameState(gameState),
+    capabilities: {
+      claimMigrationConfigured: Boolean(process.env.CLAIM_CODE_SALT),
+    },
   };
 };
 

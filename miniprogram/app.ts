@@ -1,5 +1,7 @@
+import type { AppCapabilities, GameState, LanguagePreference, ThemePreference, UserProfile } from './types';
 import { loginWithCloud, saveGameStateToCloud, saveProfileToCloud } from './utils/cloud';
 import { createDefaultGameState, sanitizeHydratedGameState } from './utils/gameState';
+import { buildProfileUpdate, mergeHydratedProfile, shouldRequireProfileSetup } from './utils/profile';
 import {
   loadLocalGameState,
   loadLocalLanguagePreference,
@@ -28,9 +30,8 @@ import {
   resolveThemePreference,
   getThemeLabel,
 } from './utils/theme';
-import type { GameState, LanguagePreference, ThemePreference, UserProfile } from './types';
-
 let syncTimer: ReturnType<typeof setTimeout> | null = null;
+let onboardingNavigationPending = false;
 
 App<IAppOption>({
   globalData: {
@@ -41,6 +42,10 @@ App<IAppOption>({
     systemTheme: 'light',
     languagePreference: 'auto',
     activeLanguage: 'en',
+    capabilities: {
+      claimMigrationConfigured: false,
+    },
+    cloudBootstrapState: 'pending',
     statusBarHeight: 24,
     ready: false,
   },
@@ -58,16 +63,27 @@ App<IAppOption>({
     if (localProfile) this.globalData.profile = localProfile;
     if (localGameState) this.globalData.gameState = localGameState;
     this.globalData.ready = true;
+    this.ensureProfileSetup();
+    this.refreshCurrentPage();
 
     try {
       const result = await loginWithCloud();
-      this.globalData.profile = result.profile;
-      this.globalData.gameState = sanitizeHydratedGameState(result.gameState);
-      saveLocalProfile(result.profile);
-      saveLocalGameState(this.globalData.gameState);
-      this.refreshCurrentPage();
+      this.globalData.cloudBootstrapState = 'online';
+      this.applyHydratedState(result.profile, result.gameState, result.capabilities);
+
+      const profileNeedsReconcile = (
+        this.globalData.profile?.nickname !== result.profile.nickname
+        || this.globalData.profile?.avatarUrl !== result.profile.avatarUrl
+      );
+      if (profileNeedsReconcile && this.globalData.profile) {
+        void saveProfileToCloud(this.globalData.profile).catch((error) => {
+          console.warn('Profile reconciliation failed after bootstrap.', error);
+        });
+      }
     } catch (error) {
+      this.globalData.cloudBootstrapState = 'offline';
       console.warn('Cloud login failed, using local state.', error);
+      this.refreshCurrentPage();
     }
   },
 
@@ -142,6 +158,21 @@ App<IAppOption>({
     this.syncThemeToCurrentPage();
   },
 
+  applyHydratedState(
+    profile: UserProfile,
+    gameState: GameState,
+    capabilities?: AppCapabilities,
+  ) {
+    const mergedProfile = mergeHydratedProfile(this.globalData.profile, profile) || profile;
+    this.globalData.profile = mergedProfile;
+    this.globalData.gameState = sanitizeHydratedGameState(gameState);
+    if (capabilities) this.globalData.capabilities = capabilities;
+    saveLocalProfile(mergedProfile);
+    saveLocalGameState(this.globalData.gameState);
+    this.ensureProfileSetup();
+    this.refreshCurrentPage();
+  },
+
   syncThemeToCurrentPage() {
     applyThemeChrome(this.globalData.activeTheme);
     const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : [];
@@ -152,6 +183,8 @@ App<IAppOption>({
       activeLanguage: this.globalData.activeLanguage,
       languagePreference: this.globalData.languagePreference,
       languageLabel: getLanguageName(this.globalData.activeLanguage),
+      claimMigrationConfigured: this.globalData.capabilities.claimMigrationConfigured,
+      cloudBootstrapState: this.globalData.cloudBootstrapState,
       themeLabel: getThemeLabel(this.globalData.themePreference, this.globalData.activeLanguage),
       activeThemeLabel: getThemeLabel(this.globalData.activeTheme, this.globalData.activeLanguage),
       statusBarHeight: this.globalData.statusBarHeight,
@@ -168,17 +201,57 @@ App<IAppOption>({
     currentPage?.refresh?.();
   },
 
-  updateProfile(profilePatch: Partial<UserProfile>) {
-    if (!this.globalData.profile) return;
-    this.globalData.profile = {
-      ...this.globalData.profile,
-      ...profilePatch,
-      updatedAt: new Date().toISOString(),
-    };
-    saveLocalProfile(this.globalData.profile);
-    saveProfileToCloud(this.globalData.profile).catch((error) => {
-      console.warn('Profile sync failed; local profile is preserved.', error);
+  ensureProfileSetup() {
+    if (!shouldRequireProfileSetup(this.globalData.profile, null)) {
+      onboardingNavigationPending = false;
+    }
+    const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : [];
+    const currentPage = pages[pages.length - 1] as { route?: string } | undefined;
+    const currentRoute = currentPage?.route || null;
+    if (!shouldRequireProfileSetup(this.globalData.profile, currentRoute)) {
+      onboardingNavigationPending = false;
+      return;
+    }
+    if (!currentRoute) {
+      setTimeout(() => this.ensureProfileSetup(), 0);
+      return;
+    }
+    if (onboardingNavigationPending) return;
+
+    onboardingNavigationPending = true;
+    const returnTab = encodeURIComponent(`/${currentRoute}`);
+    wx.navigateTo({
+      url: `/pages/claim-profile/index?mode=onboarding&returnTab=${returnTab}`,
+      fail: () => {
+        onboardingNavigationPending = false;
+      },
     });
+  },
+
+  async updateProfile(profilePatch: Partial<UserProfile>) {
+    const nextProfile = buildProfileUpdate(this.globalData.profile, profilePatch, {
+      openId: this.globalData.profile?.openId || '',
+    });
+    this.globalData.profile = nextProfile;
+    saveLocalProfile(nextProfile);
+    this.ensureProfileSetup();
+    this.refreshCurrentPage();
+
+    try {
+      const result = await saveProfileToCloud(nextProfile);
+      const mergedProfile = mergeHydratedProfile(nextProfile, result.profile) || result.profile;
+      this.globalData.profile = mergedProfile;
+      this.globalData.cloudBootstrapState = 'online';
+      saveLocalProfile(mergedProfile);
+      this.ensureProfileSetup();
+      this.refreshCurrentPage();
+      return { profile: mergedProfile, cloudSaved: true };
+    } catch (error) {
+      this.globalData.cloudBootstrapState = 'offline';
+      console.warn('Profile sync failed; local profile is preserved.', error);
+      this.refreshCurrentPage();
+      return { profile: nextProfile, cloudSaved: false };
+    }
   },
 
   updateGameState(gameState: GameState) {

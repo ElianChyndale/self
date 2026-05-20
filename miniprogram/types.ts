@@ -5,8 +5,13 @@ export type ThemePreference = 'light' | 'dark' | 'system';
 export type ActiveTheme = 'light' | 'dark';
 export type AppLanguage = 'zh-CN' | 'en';
 export type LanguagePreference = 'auto' | AppLanguage;
+export type CloudBootstrapState = 'pending' | 'online' | 'offline';
 export type NewsCategory = 'finance' | 'computer-science' | 'ai' | 'politics';
 export type IntelSource = 'bundled' | 'cache' | 'live';
+
+export interface AppCapabilities {
+  claimMigrationConfigured: boolean;
+}
 
 export interface NewsArticle {
   title: string;
@@ -75,6 +80,8 @@ export interface MiniRuntimeState {
   systemTheme: ActiveTheme;
   languagePreference: LanguagePreference;
   activeLanguage: AppLanguage;
+  capabilities: AppCapabilities;
+  cloudBootstrapState: CloudBootstrapState;
   statusBarHeight: number;
   ready: boolean;
 }

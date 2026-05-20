@@ -15,12 +15,13 @@ export function hashClaimCode(claimCode, salt) {
     .digest('hex');
 }
 
-export function createClaimRecord({ email, firebaseUid, gameStateSnapshot, claimCode, salt, expiresAt }) {
+export function createClaimRecord({ email, firebaseUid, gameStateSnapshot, profileSnapshot = {}, claimCode, salt, expiresAt }) {
   return {
     emailLower: normalizeEmail(email),
     firebaseUid,
     claimCodeHash: hashClaimCode(claimCode, salt),
     gameStateSnapshot,
+    profileSnapshot,
     expiresAt,
     claimedByOpenId: null,
     claimedAt: null,

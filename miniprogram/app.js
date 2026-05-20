@@ -2,11 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const cloud_1 = require("./utils/cloud");
 const gameState_1 = require("./utils/gameState");
+const profile_1 = require("./utils/profile");
 const storage_1 = require("./utils/storage");
 const cloud_2 = require("./utils/cloud");
 const language_1 = require("./utils/language");
 const theme_1 = require("./utils/theme");
 let syncTimer = null;
+let onboardingNavigationPending = false;
 App({
     globalData: {
         profile: null,
@@ -16,6 +18,10 @@ App({
         systemTheme: 'light',
         languagePreference: 'auto',
         activeLanguage: 'en',
+        capabilities: {
+            claimMigrationConfigured: false,
+        },
+        cloudBootstrapState: 'pending',
         statusBarHeight: 24,
         ready: false,
     },
@@ -26,6 +32,7 @@ App({
         void this.bootstrap();
     },
     async bootstrap() {
+        var _a, _b;
         const localProfile = (0, storage_1.loadLocalProfile)();
         const localGameState = (0, storage_1.loadLocalGameState)();
         if (localProfile)
@@ -33,16 +40,24 @@ App({
         if (localGameState)
             this.globalData.gameState = localGameState;
         this.globalData.ready = true;
+        this.ensureProfileSetup();
+        this.refreshCurrentPage();
         try {
             const result = await (0, cloud_1.loginWithCloud)();
-            this.globalData.profile = result.profile;
-            this.globalData.gameState = (0, gameState_1.sanitizeHydratedGameState)(result.gameState);
-            (0, storage_1.saveLocalProfile)(result.profile);
-            (0, storage_1.saveLocalGameState)(this.globalData.gameState);
-            this.refreshCurrentPage();
+            this.globalData.cloudBootstrapState = 'online';
+            this.applyHydratedState(result.profile, result.gameState, result.capabilities);
+            const profileNeedsReconcile = (((_a = this.globalData.profile) === null || _a === void 0 ? void 0 : _a.nickname) !== result.profile.nickname
+                || ((_b = this.globalData.profile) === null || _b === void 0 ? void 0 : _b.avatarUrl) !== result.profile.avatarUrl);
+            if (profileNeedsReconcile && this.globalData.profile) {
+                void (0, cloud_1.saveProfileToCloud)(this.globalData.profile).catch((error) => {
+                    console.warn('Profile reconciliation failed after bootstrap.', error);
+                });
+            }
         }
         catch (error) {
+            this.globalData.cloudBootstrapState = 'offline';
             console.warn('Cloud login failed, using local state.', error);
+            this.refreshCurrentPage();
         }
     },
     initializeTheme() {
@@ -100,6 +115,17 @@ App({
         (0, storage_1.saveLocalLanguagePreference)(languagePreference);
         this.syncThemeToCurrentPage();
     },
+    applyHydratedState(profile, gameState, capabilities) {
+        const mergedProfile = (0, profile_1.mergeHydratedProfile)(this.globalData.profile, profile) || profile;
+        this.globalData.profile = mergedProfile;
+        this.globalData.gameState = (0, gameState_1.sanitizeHydratedGameState)(gameState);
+        if (capabilities)
+            this.globalData.capabilities = capabilities;
+        (0, storage_1.saveLocalProfile)(mergedProfile);
+        (0, storage_1.saveLocalGameState)(this.globalData.gameState);
+        this.ensureProfileSetup();
+        this.refreshCurrentPage();
+    },
     syncThemeToCurrentPage() {
         var _a, _b, _c, _d;
         (0, theme_1.applyThemeChrome)(this.globalData.activeTheme);
@@ -111,6 +137,8 @@ App({
             activeLanguage: this.globalData.activeLanguage,
             languagePreference: this.globalData.languagePreference,
             languageLabel: (0, language_1.getLanguageName)(this.globalData.activeLanguage),
+            claimMigrationConfigured: this.globalData.capabilities.claimMigrationConfigured,
+            cloudBootstrapState: this.globalData.cloudBootstrapState,
             themeLabel: (0, theme_1.getThemeLabel)(this.globalData.themePreference, this.globalData.activeLanguage),
             activeThemeLabel: (0, theme_1.getThemeLabel)(this.globalData.activeTheme, this.globalData.activeLanguage),
             statusBarHeight: this.globalData.statusBarHeight,
@@ -126,18 +154,57 @@ App({
         const currentPage = pages[pages.length - 1];
         (_a = currentPage === null || currentPage === void 0 ? void 0 : currentPage.refresh) === null || _a === void 0 ? void 0 : _a.call(currentPage);
     },
-    updateProfile(profilePatch) {
-        if (!this.globalData.profile)
+    ensureProfileSetup() {
+        if (!(0, profile_1.shouldRequireProfileSetup)(this.globalData.profile, null)) {
+            onboardingNavigationPending = false;
+        }
+        const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : [];
+        const currentPage = pages[pages.length - 1];
+        const currentRoute = (currentPage === null || currentPage === void 0 ? void 0 : currentPage.route) || null;
+        if (!(0, profile_1.shouldRequireProfileSetup)(this.globalData.profile, currentRoute)) {
+            onboardingNavigationPending = false;
             return;
-        this.globalData.profile = {
-            ...this.globalData.profile,
-            ...profilePatch,
-            updatedAt: new Date().toISOString(),
-        };
-        (0, storage_1.saveLocalProfile)(this.globalData.profile);
-        (0, cloud_1.saveProfileToCloud)(this.globalData.profile).catch((error) => {
-            console.warn('Profile sync failed; local profile is preserved.', error);
+        }
+        if (!currentRoute) {
+            setTimeout(() => this.ensureProfileSetup(), 0);
+            return;
+        }
+        if (onboardingNavigationPending)
+            return;
+        onboardingNavigationPending = true;
+        const returnTab = encodeURIComponent(`/${currentRoute}`);
+        wx.navigateTo({
+            url: `/pages/claim-profile/index?mode=onboarding&returnTab=${returnTab}`,
+            fail: () => {
+                onboardingNavigationPending = false;
+            },
         });
+    },
+    async updateProfile(profilePatch) {
+        var _a;
+        const nextProfile = (0, profile_1.buildProfileUpdate)(this.globalData.profile, profilePatch, {
+            openId: ((_a = this.globalData.profile) === null || _a === void 0 ? void 0 : _a.openId) || '',
+        });
+        this.globalData.profile = nextProfile;
+        (0, storage_1.saveLocalProfile)(nextProfile);
+        this.ensureProfileSetup();
+        this.refreshCurrentPage();
+        try {
+            const result = await (0, cloud_1.saveProfileToCloud)(nextProfile);
+            const mergedProfile = (0, profile_1.mergeHydratedProfile)(nextProfile, result.profile) || result.profile;
+            this.globalData.profile = mergedProfile;
+            this.globalData.cloudBootstrapState = 'online';
+            (0, storage_1.saveLocalProfile)(mergedProfile);
+            this.ensureProfileSetup();
+            this.refreshCurrentPage();
+            return { profile: mergedProfile, cloudSaved: true };
+        }
+        catch (error) {
+            this.globalData.cloudBootstrapState = 'offline';
+            console.warn('Profile sync failed; local profile is preserved.', error);
+            this.refreshCurrentPage();
+            return { profile: nextProfile, cloudSaved: false };
+        }
     },
     updateGameState(gameState) {
         this.globalData.gameState = gameState;

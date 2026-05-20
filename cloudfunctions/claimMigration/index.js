@@ -12,8 +12,8 @@ exports.main = async (event) => {
   const emailLower = String(event.email || '').trim().toLowerCase();
   const claimCode = String(event.claimCode || '').trim().toUpperCase();
   const salt = process.env.CLAIM_CODE_SALT;
-  if (!emailLower || !claimCode) throw new Error('Email and claim code are required');
-  if (!salt) throw new Error('CLAIM_CODE_SALT is not configured');
+  if (!emailLower || !claimCode) return fail('INVALID_CODE', 'Email and claim code are required', Boolean(salt));
+  if (!salt) return fail('NOT_CONFIGURED', 'CLAIM_CODE_SALT is not configured', false);
 
   const claimCodeHash = hashClaimCode(claimCode, salt);
   const claimQuery = await db.collection('migrationClaims')
@@ -21,21 +21,25 @@ exports.main = async (event) => {
     .limit(1)
     .get();
   const claim = claimQuery.data && claimQuery.data[0];
-  if (!claim) throw new Error('Invalid claim code');
-  if (claim.claimedAt || claim.claimedByOpenId) throw new Error('Claim code already used');
-  if (claim.expiresAt && new Date(claim.expiresAt).getTime() < Date.now()) throw new Error('Claim code expired');
+  if (!claim) return fail('INVALID_CODE', 'Invalid claim code', true);
+  if (claim.claimedAt || claim.claimedByOpenId) return fail('ALREADY_USED', 'Claim code already used', true);
+  if (claim.expiresAt && new Date(claim.expiresAt).getTime() < Date.now()) {
+    return fail('EXPIRED', 'Claim code expired', true);
+  }
 
   const now = new Date().toISOString();
   const profileRef = db.collection('users').doc(OPENID);
   const gameRef = db.collection('gameStates').doc(OPENID);
+  const existingProfile = await safeGet(profileRef);
+  const importedProfile = sanitizeImportedProfile(claim.profileSnapshot || claim.gameStateSnapshot?.migratedProfile || {});
 
   const profile = {
     openId: OPENID,
-    nickname: displayNameFromEmail(emailLower),
-    avatarUrl: '',
+    nickname: String(existingProfile?.nickname || importedProfile.nickname || displayNameFromEmail(emailLower)).slice(0, 32),
+    avatarUrl: String(existingProfile?.avatarUrl || importedProfile.avatarUrl || ''),
     firebaseUid: claim.firebaseUid,
     claimedFirebaseEmail: emailLower,
-    createdAt: now,
+    createdAt: existingProfile?.createdAt || now,
     updatedAt: now,
   };
   const gameState = sanitizeGameState(claim.gameStateSnapshot || {});
@@ -50,9 +54,13 @@ exports.main = async (event) => {
   });
 
   return {
+    ok: true,
     openId: OPENID,
     profile,
     gameState,
+    capabilities: {
+      claimMigrationConfigured: true,
+    },
   };
 };
 
@@ -69,6 +77,13 @@ function displayNameFromEmail(email) {
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
+}
+
+function sanitizeImportedProfile(input) {
+  return {
+    nickname: String(input?.nickname || '').trim(),
+    avatarUrl: String(input?.avatarUrl || '').trim(),
+  };
 }
 
 function sanitizeGameState(input) {
@@ -98,4 +113,22 @@ function numberInRange(value, min, max, fallback) {
   const number = Number(value);
   if (!Number.isFinite(number)) return fallback;
   return Math.min(max, Math.max(min, number));
+}
+
+async function safeGet(ref) {
+  try {
+    const result = await ref.get();
+    return result.data || null;
+  } catch {
+    return null;
+  }
+}
+
+function fail(code, message, claimMigrationConfigured) {
+  return {
+    ok: false,
+    code,
+    message,
+    claimMigrationConfigured,
+  };
 }
