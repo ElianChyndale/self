@@ -6,6 +6,7 @@ exports.callCloudFunction = callCloudFunction;
 exports.loginWithCloud = loginWithCloud;
 exports.saveGameStateToCloud = saveGameStateToCloud;
 exports.saveProfileToCloud = saveProfileToCloud;
+exports.uploadAvatarToCloud = uploadAvatarToCloud;
 exports.claimMigration = claimMigration;
 exports.fetchIntelFeed = fetchIntelFeed;
 exports.fetchIntelArticle = fetchIntelArticle;
@@ -76,6 +77,34 @@ function saveGameStateToCloud(gameState) {
 }
 function saveProfileToCloud(profile) {
     return callCloudFunction('saveProfile', { profile }, 5000);
+}
+function extensionFromFilePath(filePath) {
+    const match = filePath.match(/\.(jpg|jpeg|png|webp|gif)$/i);
+    return match ? `.${match[1].toLowerCase()}` : '.png';
+}
+async function uploadAvatarToCloud(localFilePath, openId) {
+    var _a;
+    if (!((_a = wx.cloud) === null || _a === void 0 ? void 0 : _a.uploadFile)) {
+        throw toCloudError(new Error('wx.cloud.uploadFile is unavailable in this runtime'));
+    }
+    const normalizedOpenId = (openId || 'anonymous').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const cloudPath = `avatars/${normalizedOpenId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}${extensionFromFilePath(localFilePath)}`;
+    const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error(`uploadAvatar timeout after 15000ms`)), 15000);
+    });
+    try {
+        const uploadResult = await Promise.race([
+            wx.cloud.uploadFile({
+                cloudPath,
+                filePath: localFilePath,
+            }),
+            timeoutPromise,
+        ]);
+        return uploadResult.fileID;
+    }
+    catch (error) {
+        throw toCloudError(error);
+    }
 }
 function claimMigration(email, claimCode) {
     return callCloudFunction('claimMigration', { email, claimCode }, 10000);

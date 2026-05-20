@@ -44,23 +44,8 @@ function inferChinaByCoordinates(latitude, longitude) {
     return inChina ? 'zh-CN' : 'en';
 }
 async function detectRegionalLanguage() {
-    try {
-        const settings = await promisify((callback) => { var _a; return (_a = wx.getSetting) === null || _a === void 0 ? void 0 : _a.call(wx, callback); });
-        const authSetting = ((settings === null || settings === void 0 ? void 0 : settings.authSetting) || {});
-        const canUseFuzzy = authSetting['scope.userFuzzyLocation'];
-        const canUsePrecise = authSetting['scope.userLocation'];
-        if (canUseFuzzy && typeof wx.getFuzzyLocation === 'function') {
-            const location = await promisify((callback) => wx.getFuzzyLocation({ type: 'wgs84', ...callback }));
-            return inferChinaByCoordinates(location === null || location === void 0 ? void 0 : location.latitude, location === null || location === void 0 ? void 0 : location.longitude);
-        }
-        if (canUsePrecise && typeof wx.getLocation === 'function') {
-            const location = await promisify((callback) => wx.getLocation({ type: 'wgs84', ...callback }));
-            return inferChinaByCoordinates(location === null || location === void 0 ? void 0 : location.latitude, location === null || location === void 0 ? void 0 : location.longitude);
-        }
-    }
-    catch (error) {
-        console.warn('Regional language detection failed; falling back to system language.', error);
-    }
+    // Avoid location APIs so release checks do not require user-location permissions.
+    // We keep auto mode deterministic via system language and user override controls.
     return null;
 }
 function getLanguageName(language) {
@@ -288,6 +273,8 @@ function getLanguagePack(language) {
             saveProfile: isZh ? '保存资料' : 'Save Profile',
             saveReadyHint: isZh ? '昵称与头像都填写后才可保存。' : 'Saving requires both a nickname and an avatar.',
             savingProfile: isZh ? '正在保存资料…' : 'Saving profile...',
+            uploadingAvatar: isZh ? '正在上传头像到云端…' : 'Uploading avatar to cloud...',
+            avatarUploadFailed: isZh ? '头像上传失败，请稍后重试。' : 'Avatar upload failed. Please try again.',
             savedInline: isZh ? '资料已同步到云端。' : 'Profile saved to cloud.',
             savedLocalOnly: isZh ? '资料已保存在本地，云端同步稍后重试。' : 'Profile saved locally. Cloud sync will retry later.',
             claimTitle: isZh ? '迁移 Firebase 存档' : 'Claim Firebase Save',
@@ -313,17 +300,4 @@ function getLanguagePack(language) {
             claimUnknown: isZh ? '迁移失败，请稍后再试。' : 'Migration failed. Please try again later.',
         },
     };
-}
-function promisify(runner) {
-    return new Promise((resolve, reject) => {
-        try {
-            runner({
-                success: resolve,
-                fail: reject,
-            });
-        }
-        catch (error) {
-            reject(error);
-        }
-    });
 }

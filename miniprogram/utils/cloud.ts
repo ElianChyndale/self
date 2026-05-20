@@ -124,6 +124,37 @@ export function saveProfileToCloud(profile: Partial<UserProfile>): Promise<SaveP
   return callCloudFunction<SaveProfileResult>('saveProfile', { profile }, 5000);
 }
 
+function extensionFromFilePath(filePath: string): string {
+  const match = filePath.match(/\.(jpg|jpeg|png|webp|gif)$/i);
+  return match ? `.${match[1].toLowerCase()}` : '.png';
+}
+
+export async function uploadAvatarToCloud(localFilePath: string, openId: string): Promise<string> {
+  if (!wx.cloud?.uploadFile) {
+    throw toCloudError(new Error('wx.cloud.uploadFile is unavailable in this runtime'));
+  }
+
+  const normalizedOpenId = (openId || 'anonymous').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const cloudPath = `avatars/${normalizedOpenId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}${extensionFromFilePath(localFilePath)}`;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error(`uploadAvatar timeout after 15000ms`)), 15000);
+  });
+
+  try {
+    const uploadResult = await Promise.race([
+      wx.cloud.uploadFile({
+        cloudPath,
+        filePath: localFilePath,
+      }),
+      timeoutPromise,
+    ]);
+    return (uploadResult as { fileID: string }).fileID;
+  } catch (error) {
+    throw toCloudError(error);
+  }
+}
+
 export function claimMigration(email: string, claimCode: string): Promise<ClaimMigrationResult> {
   return callCloudFunction<ClaimMigrationResult>('claimMigration', { email, claimCode }, 10000);
 }

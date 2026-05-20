@@ -79,6 +79,7 @@ Page({
         this.setData({ claimCode: event.detail.value });
     },
     async saveProfile() {
+        var _a;
         if (!this.data.canSaveProfile || this.data.profileSaveBusy) {
             wx.showToast({ title: this.data.copy.profile.profileRequiredToast, icon: 'none' });
             return;
@@ -89,9 +90,29 @@ Page({
             profileStatusText: this.data.copy.profile.savingProfile,
         });
         const app = getApp();
+        let avatarUrl = String(this.data.avatarUrl || '').trim();
+        if (this.isLocalTempAvatarPath(avatarUrl)) {
+            this.setData({
+                profileStatusTone: 'info',
+                profileStatusText: this.data.copy.profile.uploadingAvatar,
+            });
+            try {
+                avatarUrl = await (0, cloud_1.uploadAvatarToCloud)(avatarUrl, ((_a = app.globalData.profile) === null || _a === void 0 ? void 0 : _a.openId) || '');
+                this.setData({ avatarUrl });
+            }
+            catch (error) {
+                console.error('Avatar upload failed', error);
+                this.setData({
+                    profileSaveBusy: false,
+                    profileStatusTone: 'error',
+                    profileStatusText: this.data.copy.profile.avatarUploadFailed,
+                });
+                return;
+            }
+        }
         const result = await app.updateProfile({
             nickname: String(this.data.nickname || '').trim() || (0, language_1.getDefaultProfileName)(app.globalData.activeLanguage),
-            avatarUrl: this.data.avatarUrl,
+            avatarUrl,
         });
         this.refresh();
         this.setData({
@@ -181,5 +202,8 @@ Page({
         if (code === 'NOT_CONFIGURED')
             return this.data.copy.profile.claimNotConfigured;
         return this.data.copy.profile.claimUnknown;
+    },
+    isLocalTempAvatarPath(value) {
+        return /^(wxfile:|http:\/\/tmp\/|https:\/\/tmp\/)/i.test(String(value || ''));
     },
 });

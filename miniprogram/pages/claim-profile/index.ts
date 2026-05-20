@@ -1,4 +1,4 @@
-import { claimMigration } from '../../utils/cloud';
+import { claimMigration, uploadAvatarToCloud } from '../../utils/cloud';
 import { buildThemePageData } from '../../utils/pageData';
 import { sanitizeHydratedGameState } from '../../utils/gameState';
 import { syncCustomTabBar } from '../../utils/tabBar';
@@ -110,9 +110,29 @@ Page({
     });
 
     const app = getApp<IAppOption>();
+    let avatarUrl = String(this.data.avatarUrl || '').trim();
+    if (this.isLocalTempAvatarPath(avatarUrl)) {
+      this.setData({
+        profileStatusTone: 'info',
+        profileStatusText: this.data.copy.profile.uploadingAvatar,
+      });
+      try {
+        avatarUrl = await uploadAvatarToCloud(avatarUrl, app.globalData.profile?.openId || '');
+        this.setData({ avatarUrl });
+      } catch (error) {
+        console.error('Avatar upload failed', error);
+        this.setData({
+          profileSaveBusy: false,
+          profileStatusTone: 'error',
+          profileStatusText: this.data.copy.profile.avatarUploadFailed,
+        });
+        return;
+      }
+    }
+
     const result = await app.updateProfile({
       nickname: String(this.data.nickname || '').trim() || getDefaultProfileName(app.globalData.activeLanguage),
-      avatarUrl: this.data.avatarUrl,
+      avatarUrl,
     });
     this.refresh();
     this.setData({
@@ -206,5 +226,9 @@ Page({
     if (code === 'EXPIRED') return this.data.copy.profile.claimExpired;
     if (code === 'NOT_CONFIGURED') return this.data.copy.profile.claimNotConfigured;
     return this.data.copy.profile.claimUnknown;
+  },
+
+  isLocalTempAvatarPath(value: string) {
+    return /^(wxfile:|http:\/\/tmp\/|https:\/\/tmp\/)/i.test(String(value || ''));
   },
 });

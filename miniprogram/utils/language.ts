@@ -45,27 +45,8 @@ export function inferChinaByCoordinates(
 }
 
 export async function detectRegionalLanguage(): Promise<AppLanguage | null> {
-  try {
-    const settings = await promisify<Record<string, unknown>>((callback) => wx.getSetting?.(callback));
-    const authSetting = (settings?.authSetting || {}) as Record<string, boolean>;
-    const canUseFuzzy = authSetting['scope.userFuzzyLocation'];
-    const canUsePrecise = authSetting['scope.userLocation'];
-
-    if (canUseFuzzy && typeof wx.getFuzzyLocation === 'function') {
-      const location = await promisify<{ latitude?: number; longitude?: number }>((callback) =>
-        wx.getFuzzyLocation({ type: 'wgs84', ...callback }));
-      return inferChinaByCoordinates(location?.latitude, location?.longitude);
-    }
-
-    if (canUsePrecise && typeof wx.getLocation === 'function') {
-      const location = await promisify<{ latitude?: number; longitude?: number }>((callback) =>
-        wx.getLocation({ type: 'wgs84', ...callback }));
-      return inferChinaByCoordinates(location?.latitude, location?.longitude);
-    }
-  } catch (error) {
-    console.warn('Regional language detection failed; falling back to system language.', error);
-  }
-
+  // Avoid location APIs so release checks do not require user-location permissions.
+  // We keep auto mode deterministic via system language and user override controls.
   return null;
 }
 
@@ -312,6 +293,8 @@ export function getLanguagePack(language: AppLanguage) {
       saveProfile: isZh ? '保存资料' : 'Save Profile',
       saveReadyHint: isZh ? '昵称与头像都填写后才可保存。' : 'Saving requires both a nickname and an avatar.',
       savingProfile: isZh ? '正在保存资料…' : 'Saving profile...',
+      uploadingAvatar: isZh ? '正在上传头像到云端…' : 'Uploading avatar to cloud...',
+      avatarUploadFailed: isZh ? '头像上传失败，请稍后重试。' : 'Avatar upload failed. Please try again.',
       savedInline: isZh ? '资料已同步到云端。' : 'Profile saved to cloud.',
       savedLocalOnly: isZh ? '资料已保存在本地，云端同步稍后重试。' : 'Profile saved locally. Cloud sync will retry later.',
       claimTitle: isZh ? '迁移 Firebase 存档' : 'Claim Firebase Save',
@@ -337,20 +320,4 @@ export function getLanguagePack(language: AppLanguage) {
       claimUnknown: isZh ? '迁移失败，请稍后再试。' : 'Migration failed. Please try again later.',
     },
   };
-}
-
-function promisify<T>(runner: (callbacks: {
-  success: (value: T) => void;
-  fail: (error: unknown) => void;
-}) => void): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    try {
-      runner({
-        success: resolve,
-        fail: reject,
-      });
-    } catch (error) {
-      reject(error);
-    }
-  });
 }
